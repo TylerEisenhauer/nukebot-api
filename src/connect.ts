@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 
 export default (connectionString: string) => {
-
     const connect = () => {
         mongoose
             .connect(
@@ -22,4 +21,4 @@ export default (connectionString: string) => {
     connect();
 
     mongoose.connection.on('disconnected', connect);
-};
+}
