@@ -1,4 +1,4 @@
-import express from 'express'
+import express, {response} from 'express'
 import {validationResult} from 'express-validator'
 import moment from 'moment'
 import Sale, {ISale} from '../types/mongoose/sale'
@@ -8,9 +8,12 @@ const listSales = async (req: express.Request, res: express.Response) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()})
     }
+
+    //TODO: if this falls on monday it does not work correctly
     const date: moment.Moment = req.query.date ? moment.utc(req.query.date as string) : moment.utc()
-    const weekStart = date.startOf('day').day('Tuesday').toDate()
-    const weekEnd = date.startOf('day').day('Tuesday').add(6, 'days').toDate()
+    const weekStart = moment(date).startOf('day').day('Tuesday').toDate()
+    const weekEnd = moment(weekStart).add(6, 'days').toDate()
+
     const sales: ISale[] = await Sale.find({date: {$gte: weekStart, $lte: weekEnd}})
     if (sales.length) {
         res.send(sales)
@@ -19,7 +22,7 @@ const listSales = async (req: express.Request, res: express.Response) => {
     }
 }
 
-const getSalesById = async (req: express.Request, res: express.Response) => {
+const getSaleById = async (req: express.Request, res: express.Response) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()})
@@ -68,9 +71,30 @@ const updateSale = async (req: express.Request, res: express.Response) => {
     }
 }
 
+const deleteSale = async (req: express.Request, res: express.Response) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+    }
+
+    try {
+        const saleId = req.params.saleId
+        const deletedSale = await Sale.findOneAndDelete({_id: saleId})
+
+        if (deletedSale) {
+            res.sendStatus(204)
+        } else {
+            response.sendStatus(404)
+        }
+    } catch (e) {
+        res.send('Error deleting sale').status(500)
+    }
+}
+
 export default {
     listSales,
-    getSalesById,
+    getSaleById,
     createSale,
-    updateSale
+    updateSale,
+    deleteSale
 }

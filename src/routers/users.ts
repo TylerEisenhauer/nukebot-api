@@ -1,7 +1,8 @@
 import express from 'express'
 import {body} from 'express-validator'
 import usersController from '../controllers/usersController'
-import {authenticateToken} from '../authorization/auth'
+import auth from '../authorization/auth'
+import User from "../types/mongoose/user";
 
 let usersRouter = express.Router()
 
@@ -12,8 +13,14 @@ usersRouter.post('/login', [
     usersController.login
 )
 
-usersRouter.post('/create', authenticateToken, [
-        body('username').isString(),
+usersRouter.post('/create', auth.enforceRole('admin'), [
+        body('username')
+            .isString()
+            .custom((value: string) => {
+                return User.countDocuments({username: value}).then((count) => {
+                    if (count !== 0) return Promise.reject('User Already Exists')
+                })
+            }),
         body('password').isString()
     ],
     usersController.create
