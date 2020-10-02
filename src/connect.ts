@@ -8,7 +8,8 @@ export default (connectionString: string) => {
                 connectionString,
                 {
                     useNewUrlParser: true,
-                    useUnifiedTopology: true
+                    useUnifiedTopology: true,
+                    useFindAndModify: false
                 }
             )
             .then(() => {

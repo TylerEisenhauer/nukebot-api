@@ -1,50 +1,52 @@
 import express from 'express'
-import moment from 'moment'
-import Sale, {ISale} from '../types/mongoose/sale'
-import mongoose from 'mongoose'
-import {param, query, validationResult} from 'express-validator'
+import Sale from '../types/mongoose/sale'
+import {body, param, query} from 'express-validator'
+import {mongoIdValidator} from '../validators/mongoId'
+import salesController from '../controllers/salesController'
 
 let salesRouter = express.Router()
 
 salesRouter.get('/',
     query('date').optional().isDate(),
-    async (req, res) => {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()})
-        }
-        const date: moment.Moment = req.query.date ? moment.utc(req.query.date) : moment.utc()
-        const weekStart = date.startOf('day').day('Tuesday').toDate()
-        const weekEnd = date.startOf('day').day('Tuesday').add(6, 'days').toDate()
-        const sales: ISale[] = await Sale.find({date: {$gte: weekStart, $lte: weekEnd}})
-        if (sales.length) {
-            res.send(sales)
-        } else {
-            res.sendStatus(404)
-        }
-    }
+    salesController.listSales
 )
 
 salesRouter.get('/:saleId',
     param('saleId').custom(value => {
-        if (!mongoose.Types.ObjectId.isValid(value)) {
-            throw new Error('Invalid sales reference')
-        }
-        return true
+        return mongoIdValidator(value)
     }),
-    async (req, res) => {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()})
-        }
-        const saleId = req.params.saleId
-        const sale = await Sale.findById(saleId)
+    salesController.getSalesById
+)
 
-        if (!sale) {
-            return res.sendStatus(404)
-        }
-        res.send(sale)
-    }
+salesRouter.post('/', [
+        body('buyerName').isString(),
+        body('buyerBattleTag').isString(),
+        body('service').isString(),
+        body('date').isDate(),
+        body('price').isNumeric(),
+        body('amountCollected').isNumeric()
+    ],
+    salesController.createSale
+)
+
+salesRouter.patch('/:saleId', [
+        param('saleId')
+            .custom(value => {
+                return mongoIdValidator(value)
+            })
+            .custom(value => {
+                return Sale.countDocuments({_id: value}).then((count) => {
+                    if (count === 0) return Promise.reject('Invalid sale reference')
+                })
+            }),
+        body('buyerName').optional().isString(),
+        body('buyerBattleTag').optional().isString(),
+        body('service').optional().isString(),
+        body('date').optional().isDate(),
+        body('price').optional().isNumeric(),
+        body('amountCollected').optional().isNumeric()
+    ],
+    salesController.updateSale
 )
 
 export default salesRouter
