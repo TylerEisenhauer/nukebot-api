@@ -6,16 +6,14 @@ import usersRouter from './routers/usersRouter'
 import raffleRouter from './routers/raffleRouter'
 import auth from './authorization/auth'
 
-// create jwt secret
-// console.log(require('crypto').randomBytes(64).toString('hex'))
 config()
 connect(process.env.MONGO_CONNECTION)
 
 const app = express()
 app.use(express.json())
 
-app.use('/users', usersRouter)
-app.use('/sales', auth.enforceRole('admin'), salesRouter)
-app.use('/raffle', auth.enforceRole('admin'), raffleRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/sales', auth.enforceRole('admin'), salesRouter)
+app.use('/api/raffle', auth.enforceRole('admin'), raffleRouter)
 
 app.listen(3000)
