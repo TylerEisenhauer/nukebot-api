@@ -1,7 +1,7 @@
 import mongoose, {Schema, Document} from 'mongoose'
 import {IRaffleEntry} from './raffleentry'
 
-export interface IRaffle extends Document{
+export interface IRaffle extends Document {
     startedAt: Date
     endedAt: Date
     channel: string
@@ -11,10 +11,10 @@ export interface IRaffle extends Document{
 
 const RaffleSchema: Schema = new Schema({
     startedAt: {type: Date, required: true},
-    endedAt: {type: Date, required: false},
+    endedAt: {type: Date, required: false, default: null},
     channel: {type: String, required: true},
     message: {type: String, required: true},
-    winner: {type: Schema.Types.ObjectId, required: false}
+    winner: {type: Schema.Types.ObjectId, required: false, default: null}
 })
 
 export default mongoose.model<IRaffle>('Raffle', RaffleSchema)

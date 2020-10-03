@@ -3,7 +3,6 @@ import Sale from '../types/mongoose/sale'
 import {body, param, query} from 'express-validator'
 import {mongoIdValidator} from '../validators/mongoId'
 import salesController from '../controllers/salesController'
-import auth from '../authorization/auth'
 import moment from 'moment'
 
 let salesRouter = express.Router()
@@ -23,7 +22,7 @@ salesRouter.get('/:saleId',
     salesController.getSaleById
 )
 
-salesRouter.post('/', auth.enforceRole('admin'), [
+salesRouter.post('/', [
         body('buyerName').isString(),
         body('buyerBattleTag').isString(),
         body('service').isString(),
@@ -37,7 +36,7 @@ salesRouter.post('/', auth.enforceRole('admin'), [
     salesController.createSale
 )
 
-salesRouter.patch('/:saleId', auth.enforceRole('admin'), [
+salesRouter.patch('/:saleId', [
         param('saleId')
             .custom(value => {
                 return mongoIdValidator(value)
@@ -60,7 +59,7 @@ salesRouter.patch('/:saleId', auth.enforceRole('admin'), [
     salesController.updateSale
 )
 
-salesRouter.delete('/:saleId', auth.enforceRole('admin'), [
+salesRouter.delete('/:saleId', [
         param('saleId')
             .custom(value => {
                 return mongoIdValidator(value)
