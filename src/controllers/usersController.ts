@@ -7,7 +7,7 @@ import {validationResult} from "express-validator";
 const login = async (req: express.Request, res: express.Response) => {
     const user = await User.findOne({username: req.body.username})
 
-    if (await bcrypt.compare(req.body.password, user.password)) {
+    if (user && await bcrypt.compare(req.body.password, user.password)) {
         return res.send({
             'access_token': jwt.sign({
                 user: user.username,

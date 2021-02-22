@@ -6,6 +6,8 @@ services:
       - 27017:27017
     volumes:
       - mongodata:/data/db
+    logging:
+      driver: none
 
   node:
     container_name: nukebot-api
