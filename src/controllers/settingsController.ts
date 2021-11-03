@@ -11,14 +11,12 @@ const getSettings = async (req: express.Request, res: express.Response) => {
         return res.status(400).json({errors: errors.array()})
     }
 
-    const guildId: number = parseInt(req.params.guildId)
+    const guildId: string = req.params.guildId
     if (settingsCache.has(guildId)) {
-        console.log('getting from cache')
         return res.send(settingsCache.get(guildId))
     }
-    console.log('getting from database')
 
-    const settings = await Settings.findOne({ guildId })
+    const settings: ISettings = await Settings.findOne({ guildId })
 
     if (!settings) {
         return res.sendStatus(404)
@@ -56,7 +54,7 @@ const updateSettings = async (req: express.Request, res: express.Response) => {
         return res.status(400).json({errors: errors.array()})
     }
 
-    const guildId: number = parseInt(req.params.guildId)
+    const guildId: string = req.params.guildId
     const updatedFields = {
         ...req.body,
         guildId
@@ -78,7 +76,7 @@ const deleteSettings = async (req: express.Request, res: express.Response) => {
     }
 
     try {
-        const guildId: number = parseInt(req.params.guildId)
+        const guildId: string = req.params.guildId
         const deletedSettings = await Settings.findOneAndDelete({ guildId })
 
         if (deletedSettings) {
