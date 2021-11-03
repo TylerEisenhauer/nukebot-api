@@ -33,7 +33,7 @@ const createSettings = async (req: express.Request, res: express.Response) => {
         return res.status(400).json({errors: errors.array()})
     }
 
-    const guildId: number = parseInt(req.params.guildId)
+    const guildId: string = req.params.guildId
     const settings: ISettings = {
         ...req.body,
         guildId
