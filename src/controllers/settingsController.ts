@@ -3,7 +3,7 @@ import {validationResult} from 'express-validator'
 import NodeCache from 'node-cache'
 import Settings, {ISettings} from '../types/mongoose/settings'
 
-const settingsCache = new NodeCache();
+const settingsCache = new NodeCache()
 
 const getSettings = async (req: express.Request, res: express.Response) => {
     const errors = validationResult(req)
