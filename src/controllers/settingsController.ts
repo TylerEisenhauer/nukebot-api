@@ -1,4 +1,4 @@
-import express, {response} from 'express'
+import express from 'express'
 import {validationResult} from 'express-validator'
 import NodeCache from 'node-cache'
 import Settings, {ISettings} from '../types/mongoose/settings'
@@ -24,7 +24,7 @@ const getSettings = async (req: express.Request, res: express.Response) => {
 
     settingsCache.set(guildId, settings)
 
-    res.send(settings)
+    return res.send(settings)
 }
 
 const createSettings = async (req: express.Request, res: express.Response) => {
@@ -42,9 +42,9 @@ const createSettings = async (req: express.Request, res: express.Response) => {
     try {
         const newSettings: ISettings = await Settings.create(settings)
         settingsCache.del(guildId)
-        res.send(newSettings).status(201)
+        return res.send(newSettings).status(201)
     } catch (e) {
-        res.send('Error updating sale').status(500)
+        return res.send('Error updating sale').status(500)
     }
 }
 
@@ -63,9 +63,9 @@ const updateSettings = async (req: express.Request, res: express.Response) => {
     try {
         const settings: ISettings = await Settings.findOneAndUpdate({ guildId }, updatedFields, {new: true})
         settingsCache.del(guildId)
-        res.send(settings)
+        return res.send(settings)
     } catch (e) {
-        res.send('Error updating settings').status(500)
+        return res.send('Error updating settings').status(500)
     }
 }
 
@@ -81,12 +81,12 @@ const deleteSettings = async (req: express.Request, res: express.Response) => {
 
         if (deletedSettings) {
             settingsCache.del(guildId)
-            res.sendStatus(204)
+            return res.sendStatus(204)
         } else {
-            response.sendStatus(404)
+            return res.sendStatus(404)
         }
     } catch (e) {
-        res.send('Error deleting sale').status(500)
+        return res.send('Error deleting sale').status(500)
     }
 }
 
