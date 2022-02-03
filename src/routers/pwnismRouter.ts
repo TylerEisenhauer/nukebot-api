@@ -1,9 +1,6 @@
 import express from 'express'
-import Sale from '../types/mongoose/sale'
-import {body, param, query} from 'express-validator'
-import {mongoIdValidator} from '../validators/mongoId'
+import {body} from 'express-validator'
 import pwnismController from '../controllers/pwnismController'
-import moment from 'moment'
 
 let pwnismRouter = express.Router()
 

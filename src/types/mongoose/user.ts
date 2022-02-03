@@ -1,4 +1,4 @@
-import mongoose, {Schema, Document, HookNextFunction} from 'mongoose'
+import mongoose, {Schema, Document} from 'mongoose'
 import bcrypt from 'bcrypt'
 
 export interface IUser extends Document{
@@ -13,7 +13,7 @@ const UserSchema: Schema = new Schema({
     roles: {type: Array.of(String), required: true}
 })
 
-UserSchema.pre<IUser>('save', async function(next: HookNextFunction) {
+UserSchema.pre<IUser>('save', async function(next) {
     this.password = await bcrypt.hash(this.password, 10)
     next()
 })

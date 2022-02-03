@@ -3,14 +3,7 @@ import mongoose from 'mongoose'
 export default (connectionString: string) => {
     const connect = () => {
         mongoose
-            .connect(
-                connectionString,
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                    useFindAndModify: false
-                }
-            )
+            .connect(connectionString)
             .then(() => {
                 return console.info(`Successfully connected to ${connectionString}`);
             })
