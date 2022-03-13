@@ -105,7 +105,7 @@ raffleRouter.patch('/:raffleId', [
             .optional()
             .isString(),
         body('winner')
-            .optional()
+            .optional({nullable: true})
             .custom(value => {
                 return mongoIdValidator(value)
             })
